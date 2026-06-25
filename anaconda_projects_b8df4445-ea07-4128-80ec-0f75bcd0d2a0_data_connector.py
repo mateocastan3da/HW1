@@ -1,4 +1,3 @@
-
 import os
 from datetime import datetime, timedelta, timezone
 
@@ -37,29 +36,51 @@ class AlpacaDataConnector:
         """Return paper-trading account information."""
         return self.api.get_account()
 
-    def get_historical_data(self, symbol="TQQQ", days=30):
+    def get_historical_data(
+        self,
+        symbol="TQQQ",
+        days=30,
+        bar_minutes=5
+    ):
         """
-        Download daily OHLCV data for a symbol.
+        Download 1-minute or 5-minute OHLCV data for a symbol.
         """
+        if bar_minutes not in (1, 5):
+            raise ValueError(
+                "bar_minutes must be either 1 or 5."
+            )
+
         end_date = datetime.now(timezone.utc)
         start_date = end_date - timedelta(days=days)
 
+        timeframe = tradeapi.TimeFrame(
+            bar_minutes,
+            tradeapi.TimeFrameUnit.Minute
+        )
+
         bars = self.api.get_bars(
-            symbol=symbol,
-            timeframe=tradeapi.TimeFrame.Day,
+            symbol=symbol.upper(),
+            timeframe=timeframe,
             start=start_date.isoformat(),
             end=end_date.isoformat(),
             adjustment="raw",
             feed="iex"
         )
 
-        return bars.df[
+        historical_data = bars.df[
             ["open", "high", "low", "close", "volume"]
         ].copy()
 
+        if historical_data.empty:
+            raise ValueError(
+                f"No historical data was returned for {symbol}."
+            )
+
+        return historical_data
+
     def get_latest_quote(self, symbol="TQQQ"):
         """Return the latest available bid/ask quote."""
-        return self.api.get_latest_quote(symbol)
+        return self.api.get_latest_quote(symbol.upper())
 
     def create_quote_stream(self):
         """Create a real-time IEX quote stream."""
