@@ -1,5 +1,9 @@
 Mini Market Data Terminal (HW 1)
 A python app that connects to Alpaca’s paper API, getting historical $TQQQ data and streams live bid/ask quotes into a desktop window 
+Demo Video
+
+[Watch the demo video here](https://drive.google.com/file/d/1qrmRNFfVVjD-zNpbb_8s4pTr0xgdKrBo/view?usp=sharing
+)
 
 What is in here?
 anaconda_projects_b8df4445-ea07-4128-80ec-0f75bcd0d2a0_data_connector.py - the connector that handles login, historical bars, latest quotes and the live stream
